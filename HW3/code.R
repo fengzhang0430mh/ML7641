@@ -10,14 +10,13 @@ library(titanic)
 library(neuralnet)
 
 data("USArrests")   
-head(df, n = 3)
 set.seed(123)
 
-km.res <- kmeans(USArrests, 3)
-print(km.res)
+k_means <- kmeans(USArrests, 3)
+print(k_means)
 
-dd <- cbind(USArrests, cluster = km.res$cluster)
-head(dd)
+combined_date <- cbind(USArrests, cluster = k_means$cluster)
+head(combined_date)
 
 fit <- Mclust(USArrests)
 summary(fit)
@@ -27,11 +26,11 @@ data.frame(fit$classification)
 
 ### for iris dataset
 
-km.res <- kmeans(iris[,1:4], 3)
-print(km.res)
+k_means <- kmeans(iris[,1:4], 3)
+print(k_means)
 
-dd <- cbind(iris, cluster = km.res$cluster)
-head(dd)
+combined_date <- cbind(iris, cluster = k_means$cluster)
+head(combined_date)
 
 
 fit <- Mclust(iris[,1:4],G = 3)
@@ -54,27 +53,23 @@ str(pca_fit2)
 
 #### ica
 ica_fit <- fastICA(USArrests, n.comp = 4, 
-        fun = c("logcosh","exp"), alpha = 1.0, method = c("R","C"),
-        row.norm = FALSE, maxit = 200, tol = 1e-04, verbose = FALSE,
+        tol = 1e-04, verbose = FALSE,
         w.init = NULL)
-ica_fit$S
-plot(ica_fit$X, main = "Pre-processed data", xlab = "1st Dimension in Centered X", ylab = "2nd Dimension in Centered X")
+
+
 par(mfcol = c(2, 2))
 plot(1:50, ica_fit$S[,1], type = "l", xlab = "S'1", ylab = "")
 plot(1:50, ica_fit$S[,2], type = "l", xlab = "S'2", ylab = "")
 plot(1:50, ica_fit$S[,3], type = "l", xlab = "S'2", ylab = "")
 plot(1:50, ica_fit$S[,4], type = "l", xlab = "S'2", ylab = "")
 
-ica_fit2 <- fastICA(iris[,1:4], n.comp = 3, 
-                   fun = c("logcosh","exp"), alpha = 1.0, method = c("R","C"),
-                   row.norm = FALSE, maxit = 200, tol = 1e-04, verbose = FALSE,
-                   w.init = NULL)
+ica_fit2 <- fastICA(iris[,1:4], n.comp = 3
+                  )
 par(mfcol = c(1, 3))
 plot(1:150, ica_fit2$S[,1], type = "l", xlab = "S'1", ylab = "")
 plot(1:150, ica_fit2$S[,2], type = "l", xlab = "S'2", ylab = "")
 plot(1:150, ica_fit2$S[,3], type = "l", xlab = "S'2", ylab = "")
 
-plot(ica_fit2$X, main = "Pre-processed data", xlab = "1st Dimension in Centered X", ylab = "2nd Dimension in Centered X")
 
 
 ## rerun 
@@ -83,12 +78,12 @@ pca_fit <- summary(prcomp(USArrests[,1:2], center = TRUE,scale. = TRUE))
 pca_fit
 
 pca_fit2 <- summary(prcomp(iris[,1:2], center = TRUE,scale. = TRUE))
-str(pca_fit2)
+pca_fit2
 
 ### random projection
 
-set.seed(101)
-sample <- sample.int(n = nrow(USArrests), size = floor(.8*nrow(USArrests)), replace = FALSE)
+set.seed(123)
+sample <- sample.int(n = nrow(USArrests), size = floor(.7*nrow(USArrests)), replace = FALSE)
 trainn <- USArrests[sample, ]
 testt <- USArrests[-sample,]
 #Extract the train label and test label
@@ -120,24 +115,24 @@ res <- classify(trainn,testt,trainl,testl)
 res
 ### last one 
 
-rf <- randomForest(
+random_forest <- randomForest(
    Species ~ .,
   data=iris
 )
-summary(rf)
-imp = importance(rf)
+summary(random_forest)
+imp = importance(random_forest)
 mp <- data.frame(predictors=rownames(imp),imp)
 
-importance(rf)
-varImpPlot(rf)
+importance(random_forest)
+varImpPlot(random_forest)
 
-rf2 <- randomForest(data = USArrests, Rape ~.)
-summary(rf2)
-imp2 = importance(rf2, type=2)
+random_forest2 <- randomForest(data = USArrests, Rape ~.)
+summary(random_forest2)
+imp2 = importance(random_forest2, type=2)
 mp2 <- data.frame(predictors=rownames(imp2),imp2)
 mp2
-importance(rf2)
-varImpPlot(rf2)
+importance(random_forest2)
+varImpPlot(random_forest2)
 
 
 ### Problem 3
@@ -150,11 +145,11 @@ data.frame(iris$Species, fit$classification)
 
 plot(fit, what = "classification")
 
-km.res <- kmeans(iris[,1:2], 3)
-print(km.res)
+k_means <- kmeans(iris[,1:2], 3)
+print(k_means)
 
-dd <- cbind(iris, cluster = km.res$cluster)
-data.frame(iris$Species, dd$cluster)
+combined_date <- cbind(iris, cluster = k_means$cluster)
+data.frame(iris$Species, combined_date$cluster)
 
 
 ### problem 4
@@ -170,9 +165,9 @@ check_d1$comp <- ifelse(check_d1$true == 0, 2, 1)
 sum(check_d1$fit == check_d1$comp)/length(check_d1$true)
 
 
-km.res <- kmeans(na.omit(titanic[,c(6,7,8,10)]), 2)
+k_means <- kmeans(na.omit(titanic[,c(6,7,8,10)]), 2)
 
-check_d2 <- data.frame(true = na.omit(titanic)$Survived, fit = km.res$cluster)
+check_d2 <- data.frame(true = na.omit(titanic)$Survived, fit = k_means$cluster)
 
 check_d2$comp <- ifelse(check_d2$true == 0, 2, 1)
 sum(check_d2$fit == check_d2$comp)/length(check_d2$true)
@@ -202,7 +197,7 @@ testNN = data[-index , ]
 
 # fit neural network
 set.seed(2)
-NN = neuralnet(Survived ~ ., trainNN, hidden = 3 , linear.output = T )
+NN = neuralnet(Survived ~ ., trainNN, hicombined_dateen = 3 , linear.output = T )
 
 # plot neural network
 plot(NN)
@@ -221,16 +216,16 @@ max = apply(data , 2 , max)
 min = apply(data, 2 , min)
 scaled = as.data.frame(scale(data, center = min, scale = max - min))
 
-samplesize = 0.60 * nrow(data)
-set.seed(80)
+samplesize = 0.7 * nrow(data)
+set.seed(123)
 index = sample( seq_len ( nrow ( data ) ), size = samplesize )
 
 trainNN = data[index , ]
 testNN = data[-index , ]
 
 # fit neural network
-set.seed(2)
-NN = neuralnet(Survived ~ ., trainNN, hidden = 3 , linear.output = T )
+set.seed(123)
+NN = neuralnet(Survived ~ ., trainNN, hicombined_dateen = 3 , linear.output = T )
 
 # plot neural network
 plot(NN)
