@@ -1,5 +1,5 @@
 
-The code and the data can be downloaded at https://github.com/fengzhang0430mh/ML7641/HW2
+The code and the data can be downloaded at https://github.com/fengzhang0430mh/ML7641/tree/main/HW2
 
 
 The code includes all necessary data pre-processing and analysis. Due to similar data pre-processing steps, some of the codes are duplicated.
